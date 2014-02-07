@@ -1,12 +1,12 @@
-// __NOTE:__ only overriding Backbone when `railsy_backbone (start) ... (end)` 
+// __NOTE:__ only overriding Backbone when `railsy_backbone (start) ... (end)`
 // is explicitly called out.
-// 
-// Overriding Backbone.sync to implement,  
-// - Nested model attributes  
-// - Rails CSFR Integration  
-// 
+//
+// Overriding Backbone.sync to implement,
+// - Nested model attributes
+// - Rails CSFR Integration
+//
 ( function($){
-  
+
   // Define `methodMap` since it's called from within Backbone.sync
   var methodMap = {
       'create': 'POST',
@@ -36,16 +36,16 @@
     if (!options.url) {
       params.url = _.result(model, 'url') || urlError();
     }
-    
+
     // -------------------------------------------------------------------------
-    // railsy_backbone (start)  
-    // __Rails CSFR Integration__  
-    // 
-    // include the Rails CSRF token on HTTP PUTs/POSTs    
-    // 
+    // railsy_backbone (start)
+    // __Rails CSFR Integration__
+    //
+    // include the Rails CSRF token on HTTP PUTs/POSTs
+    //
     if(!options.noCSRF){
       var beforeSend = options.beforeSend;
-      
+
       // Set X-CSRF-Token HTTP header
       options.beforeSend = function(xhr) {
         var token = $('meta[name="csrf-token"]').attr('content');
@@ -54,71 +54,71 @@
       };
     }
     // railsy_backbone (end)
-    // 
+    //
     // -------------------------------------------------------------------------
 
     // Ensure that we have the appropriate request data.
     if (options.data == null && model && (method === 'create' || method === 'update' || method === 'patch')) {
       params.contentType = 'application/json';
-      
+
       // -----------------------------------------------------------------------
-      // railsy_backbone (start)  
-      // __Nested Model Attributes__  
-      // 
-      // If Backbone.Model defines `paramRoot`, then store model attributes 
-      // within `paramRoot` key-value pair. For example, book attributes 
+      // railsy_backbone (start)
+      // __Nested Model Attributes__
+      //
+      // If Backbone.Model defines `paramRoot`, then store model attributes
+      // within `paramRoot` key-value pair. For example, book attributes
       // (`title`, `author`) are nested within `book` key-value pair,
-      // 
-      //      var Book = Backbone.Model.extend({ 
+      //
+      //      var Book = Backbone.Model.extend({
       //        url: '/books',
-      //        paramRoot: 'book' 
+      //        paramRoot: 'book'
       //      });
-      // 
-      //      var book_instance = new Book({ 
-      //        title:  'the illiad', 
+      //
+      //      var book_instance = new Book({
+      //        title:  'the illiad',
       //        author: 'homer'
       //      });
-      // 
+      //
       // The resulting HTTP POST looks like this,
-      // 
+      //
       //      book_instance.sync();
-      // 
+      //
       //      Started POST "/books" for 127.0.0.1
       //        Processing by BooksController#create as JSON
       //        { "book" => { "title" => "the illiad", "author" => "home", "id" => 1} }
-      // 
-      if(model.paramRoot) {        
+      //
+      if(model.paramRoot) {
         var model_attributes = {}
-        
+
         // Store model instance in JSON format.
         var attrs = model.toJSON(options);
-        
-        // Remove Rails unofficially reserved `created_at` and `updated_at` so 
+
+        // Remove Rails unofficially reserved `created_at` and `updated_at` so
         // they're included in HTTP PUT/PATCH request.
         delete attrs["created_at"];
         delete attrs["updated_at"];
-        
+
         // Nest model attributes within model's `paramRoot` key-value pair.
         model_attributes[model.paramRoot] = attrs;
-        
+
         params.data = JSON.stringify(options.attrs || model_attributes);
       } else {
-        // If model does not define a `paramRoot`, use the original Backbone 
+        // If model does not define a `paramRoot`, use the original Backbone
         // implementation.
         params.data = JSON.stringify(options.attrs || model.toJSON(options) );
       }
-      // railsy_backbone (end)  
-      // 
+      // railsy_backbone (end)
+      //
       // -----------------------------------------------------------------------
     }
-    
+
 
     // For older servers, emulate JSON by encoding the request into an HTML-form.
     if (options.emulateJSON) {
       params.contentType = 'application/x-www-form-urlencoded';
       params.data = params.data ? {model: params.data} : {};
     }
-    
+
     // For older servers, emulate HTTP by mimicking the HTTP method with `_method`
     // And an `X-HTTP-Method-Override` header.
     if (options.emulateHTTP && (type === 'PUT' || type === 'DELETE' || type === 'PATCH')) {

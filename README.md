@@ -4,18 +4,18 @@
 
 A clone of [codebrew/backbone-rails](https://github.com/codebrew/backbone-rails) with updated Backbone, Underscore, and jquery-rails versions.
 
-Provides Backbone & Underscore files and modifies Backbone to:  
-- include the Rails authenticity token in HTTP requests  
-- nest model attributes within the declared &nbsp; `paramRoot` &nbsp;, EG, 
+Provides Backbone & Underscore files and modifies Backbone to:
+- include the Rails authenticity token in HTTP requests
+- nest model attributes within the declared &nbsp; `paramRoot` &nbsp;, EG,
 
 ```js
-var Book = Backbone.Model.extend({ 
+var Book = Backbone.Model.extend({
   url: '/books',
   paramRoot: 'book'
 });
 
-var book_instance = new Book({ 
-  title:  'the illiad', 
+var book_instance = new Book({
+  title:  'the illiad',
   author: 'homer'
 });
 
@@ -36,13 +36,13 @@ https://github.com/westonplatter/example_railsy_backbone
 
 ## Branches
 
-master  
-- Backbone 1.1.0  
-- Underscore 1.5.2  
+master
+- Backbone 1.1.0
+- Underscore 1.5.2
 
-1-0-stable  
-- Backbone 1.0.0  
-- Underscore 1.5.1  
+1-0-stable
+- Backbone 1.0.0
+- Underscore 1.5.1
 
 ## Rails Setup
 
@@ -56,9 +56,9 @@ And then,
 
     $ bundle install
     $ rails g backbone:install
-    
+
 This requires Backbone, Underscore, and the Backbone modifications to implement
-the Rails authenticity token and nesting model attributes in the paramsRoot 
+the Rails authenticity token and nesting model attributes in the paramsRoot
 (see Javscript files with the `railsy_backbone.` prefix for details).
 
 These will be added to your `app/assets/javascripts/application.js`:
@@ -72,37 +72,37 @@ These will be added to your `app/assets/javascripts/application.js`:
     //= require backbone/<your_rails_application_name>
     //= require_tree .
 
-### Generators  
-Backbone Model `$ rails g backbone:model`  
-Backbone Router `$ rails g backbone:router`  
-Backbone Scaffold `$ rails g backbone:scaffold`  
+### Generators
+Backbone Model `$ rails g backbone:model`
+Backbone Router `$ rails g backbone:router`
+Backbone Scaffold `$ rails g backbone:scaffold`
 
-### Example Usage      
+### Example Usage
 
-Create new rails app, 
+Create new rails app,
 
     rails new library
     cd library
 
 Install `railsy_backbone`,
-    
+
     # add railsy_backbone to Gemfile
     bundle install
     rails g backbone:install
 
 Generate a standard Rails scaffold,
-    
+
     rails g scaffold Book title:string author:string
     rake db:migrate
 
-Generate a `Backbone` scaffold, 
-    
+Generate a `Backbone` scaffold,
+
     rails g backbone:scaffold Book title:string author:string
-    
-Edit `books/index.html` to execute actions through the Backbone scaffold UI rather than routing to different pages. 
-    
+
+Edit `books/index.html` to execute actions through the Backbone scaffold UI rather than routing to different pages.
+
 If you're using ERB, `index.html.erb`
-    
+
     <div id="books"></div>
 
     <script type="text/javascript">
@@ -111,18 +111,18 @@ If you're using ERB, `index.html.erb`
         Backbone.history.start();
       });
     </script>
-    
+
 Or HAML, `index.html.haml`
-    
+
     #books
-    
+
     :javascript
       $(function() {
         window.router = new Library.Routers.BooksRouter({books: #{@books.to_json.html_safe}});
         Backbone.history.start();
       });
 
-If you're using the default Rails 4 scaffold generators, you'll need to adjust 
+If you're using the default Rails 4 scaffold generators, you'll need to adjust
 the default JSON show view (IE, `show.json`) to render the `id` attribute.
 
     # BROKEN -- default rails generated show.json.jbuilder
@@ -131,7 +131,7 @@ the default JSON show view (IE, `show.json`) to render the `id` attribute.
     # FIXED --- after adding `id`
     json.extract! @book, :id, :title, :author, :created_at, :updated_at
 
-Without adjusting the JSON show view, you will be redirected to a "undefined" 
+Without adjusting the JSON show view, you will be redirected to a "undefined"
 url after creating an object.
 
 
